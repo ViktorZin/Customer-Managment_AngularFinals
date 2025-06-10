@@ -8,7 +8,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 
 export const routes: Routes = [
     {
-        path:'/',
+        path:'',
         component: HomeComponent,
         title: 'Home Page'
     },
@@ -18,7 +18,7 @@ export const routes: Routes = [
         title: 'Customers'
     },
     {
-        path: 'customers/:id',
+        path: 'customer/:id',
         component: CustomerComponent,
         title: 'Customer'
     },
@@ -36,5 +36,9 @@ export const routes: Routes = [
         path: '404',
         component: PageNotFoundComponent,
         title: '404 - Page Not Found'
+    },
+    {
+        path: '**',
+        redirectTo: '404'
     }
 ];
