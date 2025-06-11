@@ -3,6 +3,7 @@ import { NavigationComponent } from '../navigation/navigation.component';
 import {FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomerData } from '../interfaces/customer-data';
 import { CustomerService } from '../customer.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -26,7 +27,7 @@ import { CustomerService } from '../customer.service';
       </div>
       <div>
         <label for="email">E-Mail: </label>
-        <input id="email" type="email" formControlName="email" ngModel email/>
+        <input id="email" type="email" formControlName="email"/>
       </div>
       <div>
         <label for="telnum">Telephone Number: </label>
@@ -41,17 +42,6 @@ import { CustomerService } from '../customer.service';
       </div>
     </form>
     </div>
-
-    <!--
-    <div>
-    <p> {{customerForm.controls.firstName.value}} 
-      {{customerForm.controls.lastName.value}} 
-      {{ customerForm.controls.email.value}}
-      {{customerForm.controls.telnum.value}}
-      {{customerForm.controls.unternehmen.value}}
-    </p>
-    </div>
--->
   `,
   styles: 
   `
@@ -62,6 +52,22 @@ import { CustomerService } from '../customer.service';
   `
 })
 export class CustomerComponent {
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
+
+  givenCustomer!: CustomerData;
+  customerService = inject(CustomerService);
+  
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      let id = params.get('id');
+      if(id) {
+        this.givenCustomer = this.customerService.getCustomerByID(+id)!;
+        this.displayCustomerData();
+      }
+    })
+  }
+  
   customerForm = new FormGroup({
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
@@ -70,31 +76,45 @@ export class CustomerComponent {
     unternehmen: new FormControl('')    
   })
 
-  customerService = inject(CustomerService);
+  displayCustomerData() {
+    this.customerForm.controls.firstName.setValue(this.givenCustomer.vorname);
+    this.customerForm.controls.lastName.setValue(this.givenCustomer.nachname);
+    this.customerForm.controls.email.setValue(this.givenCustomer.email);
+
+    console.log("givenCustomer mail: " + this.givenCustomer.email);
+
+    if(this.givenCustomer.telnum !== undefined) {
+      this.customerForm.controls.telnum.setValue(this.givenCustomer.telnum);
+    }
+    if(this.givenCustomer.unternehmen !== undefined) {
+      this.customerForm.controls.unternehmen.setValue(this.givenCustomer.unternehmen);
+    }
+  }
+
+  passCustomerData() {
+    return {
+            lastName: this.customerForm.controls.lastName.value!, 
+            firstName: this.customerForm.controls.firstName.value!,
+            mail: this.customerForm.controls.email.value!,
+            tel: this.customerForm.controls.telnum.value !== undefined ? this.customerForm.controls.telnum.value! : '',
+            job: this.customerForm.controls.unternehmen.value !== undefined ? this.customerForm.controls.unternehmen.value! : ''
+          }
+  }
+  
 
   onSubmit() {
-    console.log("Submitting Customer to Database");
-    /*
-    let customer: CustomerData = 
-    {
-      id: 0,
-      vorname: this.customerForm.controls.firstName.value!,
-      nachname: this.customerForm.controls.lastName.value!,
-      email: this.customerForm.controls.email.value!,
-      telnum: this.customerForm.controls.telnum.value!,
-      unternehmen: this.customerForm.controls.unternehmen.value!
-    } 
-     */
     if(this.customerForm.status) {
-          this.customerService.createCustomer(
-            this.customerForm.controls.lastName.value!, 
-            this.customerForm.controls.firstName.value!, 
-            this.customerForm.controls.email.value!,
-            this.customerForm.controls.telnum.value, 
-            this.customerForm.controls.unternehmen.value
-          )
-          console.log("Creating a new Customer");
+      if(this.givenCustomer !== null) {
+        if(this.customerService.doesCustomerExistByID(this.givenCustomer.id)){
+          console.log("Editing an existing Customer");
+          this.customerService.updateCustomerByID(this.givenCustomer.id, this.passCustomerData());
+        }
+      }
+      else {
+        this.customerService.createCustomer(this.passCustomerData());
+        console.log("Creating a new Customer");
+      }
+      this.router.navigate(['/customers']);
     }
-
   }
 }
