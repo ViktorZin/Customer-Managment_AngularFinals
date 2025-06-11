@@ -1,18 +1,28 @@
 import { Component, inject } from '@angular/core';
 import { NavigationComponent } from '../navigation/navigation.component';
-import { CustomerData } from '../interfaces/customer-data';
 import { CustomerService } from '../customer.service';
+import { CustomerData } from '../interfaces/customer-data';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 
 
 @Component({
   selector: 'app-customers',
-  imports: [NavigationComponent],
+  imports: [NavigationComponent, FormsModule],
   template: `
       <app-navigation></app-navigation>
-    <p>
-      customers works!
-    </p>
 
+    <div>
+      <button type="button" (click)="addNewCustomer()">Add Customer</button>
+    </div>
+
+    <div>
+      <label for="table-search">Tabellensuche: </label>
+      <input id="table-search" type="text" [(ngModel)]="inputValue" (ngModelChange)="setFilter()"/>
+    </div>
+
+    <h3>SearchTerm: {{inputValue}}</h3>
     <div class="responsive-table">
       <table>
         <tr>
@@ -21,14 +31,17 @@ import { CustomerService } from '../customer.service';
           <th>E-Mail</th>
           <th>Telefonnummer</th>
           <th>Unternehmen</th>
+          <th class="no-border"></th>
         </tr>
-        @for(item of items; track item.id) {
+        @for(item of filteredItems; track item.id) {
           <tr>
             <td>{{item.nachname}}</td>
             <td>{{item.vorname}}</td>
             <td>{{item.email}}</td>
             <td>{{item.telnum}}</td>
             <td>{{item.unternehmen}}</td>
+            <td class="no-border"><button type="button" (click)="onEdit(item.id)">Edit</button></td>
+            <td class="no-border"><button type="button" (click)="onDelete(item.id)">Delete</button></td>
           </tr>
         }
       </table>
@@ -44,7 +57,7 @@ import { CustomerService } from '../customer.service';
       width: 100%;
     }
 
-    table, th, td {
+    th, td {
       border-style: solid;
       border-color: black;
       border-collapse: collapse;
@@ -53,9 +66,56 @@ import { CustomerService } from '../customer.service';
     th, td {
       padding: 10px;
     }
+
+    .no-border {
+      border-style: none;
+      border-collapse: separate;
+    }
   `
 })
 export class CustomersComponent {
+  
+  constructor(private router: Router) {}
+
   customerService = inject(CustomerService);
   items = this.customerService.getCustomerList();
+  inputValue: string = '';
+
+  filteredItems: CustomerData[] = this.items;
+
+  setFilter() {
+    console.log("filtering");
+    if(this.inputValue === '' || this.inputValue === undefined) {
+      this.filteredItems = this.items;
+    }
+    else {
+      this.filteredItems = [];
+      for(let i = 0; i < this.items.length; i++) {
+        if(this.checkFilterMatch(this.inputValue, [this.items[i].vorname, this.items[i].nachname, this.items[i].email, this.items[i].unternehmen ])) {
+          this.filteredItems.push(this.items[i]);
+        }
+      }
+    }
+  }
+
+  addNewCustomer() {
+    this.router.navigate(['/customer', -1]);
+  }
+  onEdit(id: number) {
+    this.router.navigate(['/customer', id]);
+  }
+
+  onDelete(id: number) {
+    this.customerService.deleteCustomerByID(id);
+  }
+
+  checkFilterMatch(filter: string, data: string[]): boolean {
+    for(let i = 0; i < data.length; i++) {
+      if(data[i].includes(filter)){
+        return true;
+      }
+    }
+    
+    return false;
+  }
 }

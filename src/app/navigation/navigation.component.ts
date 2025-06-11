@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
     <nav class="navigation">
       <li><a [routerLink]="['']">HOME</a></li>
       <li><a [routerLink]="['/customers']">CUSTOMERS</a></li>
-      <li><a [routerLink]="['/customer', 0]">CUSTOMER</a></li>
+      <!--<li><a [routerLink]="['/customer', 0]">CUSTOMER</a></li>-->
       <li><a [routerLink]="['/opportunities']">OPPORTUNITIES</a></li>
       <li><a [routerLink]="['/reports']">REPORTS</a></li>
     </nav>
