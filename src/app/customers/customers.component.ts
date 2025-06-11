@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NavigationComponent } from '../navigation/navigation.component';
 import { CustomerData } from '../interfaces/customer-data';
+import { CustomerService } from '../customer.service';
 
 
 @Component({
@@ -55,10 +56,6 @@ import { CustomerData } from '../interfaces/customer-data';
   `
 })
 export class CustomersComponent {
-  items: CustomerData[] = [
-    { id: 0, nachname: 'Mustermann', vorname: 'Max', email: 'mustermann.max@viktorzin.com', telnum: '017631350213', unternehmen: 'ViktorZin Corporation'},
-    { id: 0, nachname: 'Mustermann', vorname: 'Max', email: 'mustermann.max@viktorzin.com', telnum: '017631350213', unternehmen: 'ViktorZin Corporation'},
-    { id: 0, nachname: 'Mustermann', vorname: 'Max', email: 'mustermann.max@viktorzin.com', telnum: '017631350213', unternehmen: 'ViktorZin Corporation'},
-    { id: 0, nachname: 'Mustermann', vorname: 'Max', email: 'mustermann.max@viktorzin.com', telnum: '017631350213', unternehmen: 'ViktorZin Corporation'}
-  ]
+  customerService = inject(CustomerService);
+  items = this.customerService.getCustomerList();
 }
