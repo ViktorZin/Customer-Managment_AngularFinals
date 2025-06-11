@@ -4,25 +4,30 @@ import { CustomerService } from '../customer.service';
 import { CustomerData } from '../interfaces/customer-data';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTableModule } from '@angular/material/table';
 
 
 @Component({
   selector: 'app-customers',
-  imports: [NavigationComponent, FormsModule],
+  imports: [NavigationComponent, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   template: `
       <app-navigation></app-navigation>
 
     <div>
-      <button type="button" (click)="addNewCustomer()">Add Customer</button>
+      <button mat-raised-button color="primary" type="button" (click)="addNewCustomer()">Add Customer</button>
     </div>
 
-    <div>
-      <label for="table-search">Tabellensuche: </label>
-      <input id="table-search" type="text" [(ngModel)]="inputValue" (ngModelChange)="setFilter()"/>
-    </div>
+    <mat-form-field appearance="fill">
+      <mat-label for="table-search">Tabellensuche: </mat-label>
+      <input matInput id="table-search" type="text" [(ngModel)]="inputValue" (ngModelChange)="setFilter()"/>
+    </mat-form-field>
 
-    <h3>SearchTerm: {{inputValue}}</h3>
+
     <div class="responsive-table">
       <table>
         <tr>
@@ -40,8 +45,8 @@ import { FormsModule } from '@angular/forms';
             <td>{{item.email}}</td>
             <td>{{item.telnum}}</td>
             <td>{{item.unternehmen}}</td>
-            <td class="no-border"><button type="button" (click)="onEdit(item.id)">Edit</button></td>
-            <td class="no-border"><button type="button" (click)="onDelete(item.id)">Delete</button></td>
+            <td class="no-border"><button mat-raised-button color="primary" type="button" (click)="onEdit(item.id)">Edit</button></td>
+            <td class="no-border"><button mat-raised-button color="warn" type="button" (click)="onDelete(item.id)">Delete</button></td>
           </tr>
         }
       </table>
@@ -49,6 +54,10 @@ import { FormsModule } from '@angular/forms';
   `,
   styles: 
   `
+    body {
+      background-color: white;
+    }
+
     .responsive-table {
       overflow-x:auto;
     }
@@ -75,7 +84,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class CustomersComponent {
   
-  constructor(private router: Router) {}
+  constructor(private router: Router, private dialog: MatDialog) {}
 
   customerService = inject(CustomerService);
   items = this.customerService.getCustomerList();
@@ -106,7 +115,14 @@ export class CustomersComponent {
   }
 
   onDelete(id: number) {
-    this.customerService.deleteCustomerByID(id);
+    //this.customerService.deleteCustomerByID(id);
+    let dialogRef = this.dialog.open(ConfirmDialogComponent); 
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if(result === true) {
+        this.customerService.deleteCustomerByID(id);
+      }
+    });
   }
 
   checkFilterMatch(filter: string, data: string[]): boolean {
