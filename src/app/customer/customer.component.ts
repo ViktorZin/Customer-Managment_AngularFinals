@@ -14,42 +14,46 @@ import { AvatarCardComponent } from '../avatar-card/avatar-card.component';
   imports: [NavigationComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, AvatarCardComponent],
   template: `
     <app-navigation></app-navigation>
-    <p>
-      customer works!
-    </p>
+    <div class="container">
+      <div>
+      <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+          <mat-label for="first-name">First Name: </mat-label>
+          <input matInput id="first-name" type="text" formControlName="firstName" required/>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label for="last-name">Last Name: </mat-label>
+          <input matInput id="last-name" type="text" formControlName="lastName" required/>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label for="email">E-Mail: </mat-label>
+          <input matInput id="email" type="email" formControlName="email" required/>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label for="telnum">Telephone Number: </mat-label>
+          <input matInput id="telnum" type="text" formControlName="telnum" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label for="company">Company: </mat-label>
+          <input matInput id="company" type="text" formControlName="unternehmen" />
+        </mat-form-field>
+          <div>
+            <button mat-flat-button [disabled]="!customerForm.valid" color="primary" type="submit" >Submit</button>
+          </div>
+      </form>
+      </div>
+      <div>
+      <app-avatar-card>
+        @if(givenCustomer === null) {
+          <h1>C A</h1>
+        }
+        @else {
+          <h1>{{givenCustomer.vorname[0]}} {{givenCustomer.nachname[0]}}</h1>
+        }
 
-    <div>
-    <app-avatar-card>
-      <h3>Customer Avatar</h3>
-    </app-avatar-card>
-    </div>
+      </app-avatar-card>
+      </div>
 
-    <div>
-    <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="fill">
-        <mat-label for="first-name">First Name: </mat-label>
-        <input matInput id="first-name" type="text" formControlName="firstName" required/>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label for="last-name">Last Name: </mat-label>
-        <input matInput id="last-name" type="text" formControlName="lastName" required/>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label for="email">E-Mail: </mat-label>
-        <input matInput id="email" type="email" formControlName="email" required/>
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label for="telnum">Telephone Number: </mat-label>
-        <input matInput id="telnum" type="text" formControlName="telnum" />
-      </mat-form-field>
-      <mat-form-field appearance="fill">
-        <mat-label for="company">Company: </mat-label>
-        <input matInput id="company" type="text" formControlName="unternehmen" />
-      </mat-form-field>
-        <div>
-          <button mat-raised-button color="primary" type="submit" [disabled]="!customerForm.valid">Submit</button>
-        </div>
-    </form>
     </div>
   `,
   styles: 
@@ -57,6 +61,21 @@ import { AvatarCardComponent } from '../avatar-card/avatar-card.component';
   form {
     display: flex;
     flex-direction: column;
+    min-width: 300px;
+  }
+
+  .container {
+
+    width: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    gap: 25px;
+    
+  }
+
+  .container, * {
+    min-width: 30%;
   }
   `
 })
@@ -64,15 +83,21 @@ export class CustomerComponent {
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
-  givenCustomer!: CustomerData;
+  givenCustomer: CustomerData | null = null;
   customerService = inject(CustomerService);
   
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       let id = params.get('id');
       if(id) {
-        this.givenCustomer = this.customerService.getCustomerByID(+id)!;
-        this.displayCustomerData();
+
+        if(+id !== -1) {
+          this.givenCustomer = this.customerService.getCustomerByID(+id)!;
+          this.displayCustomerData();
+        }  
+      }
+      else {
+
       }
     })
   }
@@ -80,24 +105,27 @@ export class CustomerComponent {
   customerForm = new FormGroup({
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
-    email: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
     telnum: new FormControl(''),
     unternehmen: new FormControl('')    
   })
 
   displayCustomerData() {
-    this.customerForm.controls.firstName.setValue(this.givenCustomer.vorname);
-    this.customerForm.controls.lastName.setValue(this.givenCustomer.nachname);
-    this.customerForm.controls.email.setValue(this.givenCustomer.email);
+    console.log("the given customer is NULL Why am I here?");
+    if(this.givenCustomer !== null) {
+      this.customerForm.controls.firstName.setValue(this.givenCustomer.vorname);
+      this.customerForm.controls.lastName.setValue(this.givenCustomer.nachname);
+      this.customerForm.controls.email.setValue(this.givenCustomer.email);
 
-    console.log("givenCustomer mail: " + this.givenCustomer.email);
+      console.log("givenCustomer mail: " + this.givenCustomer.email);
 
-    if(this.givenCustomer.telnum !== undefined) {
-      this.customerForm.controls.telnum.setValue(this.givenCustomer.telnum);
-    }
-    if(this.givenCustomer.unternehmen !== undefined) {
-      this.customerForm.controls.unternehmen.setValue(this.givenCustomer.unternehmen);
-    }
+      if(this.givenCustomer.telnum !== undefined) {
+        this.customerForm.controls.telnum.setValue(this.givenCustomer.telnum);
+      }
+      if(this.givenCustomer.unternehmen !== undefined) {
+        this.customerForm.controls.unternehmen.setValue(this.givenCustomer.unternehmen);
+      }
+    } 
   }
 
   passCustomerData() {

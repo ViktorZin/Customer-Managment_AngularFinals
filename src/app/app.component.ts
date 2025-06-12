@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
@@ -8,6 +9,7 @@ import { RouterOutlet } from '@angular/router';
   template: `
     <h1>APP-COMPONENT-MAIN</h1>
     <router-outlet />
+
   `,
   styleUrl: './app.component.scss'
 })

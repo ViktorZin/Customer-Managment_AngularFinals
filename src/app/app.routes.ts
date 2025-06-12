@@ -17,6 +17,11 @@ export const routes: Routes = [
         component: CustomersComponent,
         title: 'Customers'
     },
+        {
+        path: 'customer',
+        component: CustomerComponent,
+        title: 'NEW Customer'
+    },
     {
         path: 'customer/:id',
         component: CustomerComponent,

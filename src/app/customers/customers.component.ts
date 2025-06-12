@@ -19,7 +19,7 @@ import { MatTableModule } from '@angular/material/table';
       <app-navigation></app-navigation>
 
     <div>
-      <button mat-raised-button color="primary" type="button" (click)="addNewCustomer()">Add Customer</button>
+      <button mat-flat-button color="primary" type="button" (click)="addNewCustomer()">Add Customer</button>
     </div>
 
     <mat-form-field appearance="fill">
@@ -55,8 +55,9 @@ import { MatTableModule } from '@angular/material/table';
   styles: 
   `
     body {
-      background-color: white;
+      //background-color: white;
     }
+
 
     .responsive-table {
       overflow-x:auto;

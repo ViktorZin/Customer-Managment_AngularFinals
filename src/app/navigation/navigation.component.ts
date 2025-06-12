@@ -20,68 +20,93 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
       <li><a [routerLink]="['/reports']">REPORTS</a></li>
     </nav>
 -->
+<h3>THIS IS MY ROUTER OUTLET</h3>
+
 
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer [mode]="isMobile ? 'over':'side'" [opened]="!isMobile">
+  <mat-sidenav #drawer mode="over" class="sidenav" [opened]="false">
     <mat-nav-list>
-      <a mat-list-item [routerLink]="['']">HOME</a>
-      <a mat-list-item [routerLink]="['/customers']">CUSTOMERS</a>
-      <a mat-list-item [routerLink]="['/customer', 0]">CUSTOMER</a>
-      <a mat-list-item [routerLink]="['/opportunities']">OPPORTUNITIES</a>
-      <a mat-list-item [routerLink]="['/reports']">REPORTS</a>
+      <a mat-list-item [routerLink]="['']" (click)="drawer.close()">HOME</a>
+      <a mat-list-item [routerLink]="['/customers']" (click)="drawer.close()">CUSTOMERS</a>
+      <a mat-list-item [routerLink]="['/customer', -1]" (click)="drawer.close()">CUSTOMER</a>
+      <a mat-list-item [routerLink]="['/opportunities']" (click)="drawer.close()">OPPORTUNITIES</a>
+      <a mat-list-item [routerLink]="['/reports']" (click)="drawer.close()">REPORTS</a>
     </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       @if(isMobile) {
-        <button mat-icon-button (click)="drawer.toggle()"> 
+        <button mat-icon-button (click)="drawer.toggle()" class="mobile-toggle"> 
           <mat-icon>menu</mat-icon>
         </button>
       }
-
-
+      
+      <nav class="desktop-menu">
+        <li><a [routerLink]="['']">HOME</a></li>
+        <li><a [routerLink]="['/customers']">CUSTOMERS</a></li>
+        <li><a [routerLink]="['/customer', -1]">CUSTOMER</a></li>
+        <li><a [routerLink]="['/opportunities']">OPPORTUNITIES</a></li>
+        <li><a [routerLink]="['/reports']">REPORTS</a></li>
+      </nav>
     </mat-toolbar>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
+    
 
 
   `,
   styles: `
 
     .sidenav-container {
+
+    }
+
+    .sidenav {
+      position: fixed;
+      height: 100vh;
+      width: 300px;
+      z-index: 1000;
+    }
+
+    .desktop-menu {
+      display: none;
+    }
+
+    .mobile-toggle {
+      display: block;
+    }
+
+    @media(min-width: 768px) {
+      .sidenav-container {
       height: auto;
+      width: 100%;
     }
 
-    mat-toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
 
-    mat-sidenav {
-      width: 250px;
-    }
+      .desktop-menu {
+        display: flex;
+        width: 100%;
+        justify-content: space-evenly;
+        list-style: none;
+        gap: 10px;
+        
+      }
 
-    .navigation {
-      display: flex;
-      flex-direction: row;
-      list-style: none;
-      justify-content: space-between;
-      background-color: grey;
-      padding: 2% 10%;
+      .desktop-menu a {
+        text-decoration: none;
+        color: white;
+      }
+
+      .mobile-toggle {
+        display: none;
+      }
     }
   `
 })
 export class NavigationComponent {
-isMobile: boolean = false;
+isMobile: boolean = true;
 
-  constructor(private breakpointObserver: BreakpointObserver) {
-    this.breakpointObserver.observe([Breakpoints.Handset])
-      .subscribe(result => {
-        this.isMobile = result.matches;
-      });
-  }
+  
 
 }
