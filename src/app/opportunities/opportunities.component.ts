@@ -67,23 +67,7 @@ export interface PeriodicElement {
   styles: ``
 })
 export class OpportunitiesComponent {
-/*
-    opportunities: SalesOpportunity[] = [
-      {id: 0, opportunityName: 'opportunity1', customerName: 'Customer1', expectedRevenue: 12, probability: 50, status: 'In Progress', expectedCloseDate: '2026'},
-      {id: 1, opportunityName: 'opportunity2', customerName: 'Customer2', expectedRevenue: 25, probability: 25, status: 'Open', expectedCloseDate: '2028'},
-      {id: 2, opportunityName: 'opportunity3', customerName: 'Customer3', expectedRevenue: 300, probability: 78, status: 'In Progress', expectedCloseDate: '2026'},
-      {id: 3, opportunityName: 'opportunity4', customerName: 'Customer4', expectedRevenue: 5000, probability: 1, status: 'In Progress', expectedCloseDate: '2025'},
-      {id: 4, opportunityName: 'opportunity5', customerName: 'Customer5', expectedRevenue: 6, probability: 99, status: 'Won', expectedCloseDate: '2026'},
-      {id: 5, opportunityName: 'opportunity6', customerName: 'Customer6', expectedRevenue: 7, probability: 88, status: 'Lost', expectedCloseDate: '2025'},
-      {id: 6, opportunityName: 'opportunity7', customerName: 'Customer7', expectedRevenue: 22, probability: 45, status: 'Won', expectedCloseDate: '2027'},
-      {id: 7, opportunityName: 'opportunity8', customerName: 'Customer8', expectedRevenue: 56, probability: 58, status: 'Lost', expectedCloseDate: '2026'},
-      {id: 8, opportunityName: 'opportunity9', customerName: 'Customer9', expectedRevenue: 55, probability: 69, status: 'Won', expectedCloseDate: '2027'},
-      {id: 9, opportunityName: 'opportunity10', customerName: 'Customer10', expectedRevenue: 32, probability: 8238, status: 'Open', expectedCloseDate: '2026'},
-    ]
 
-  customerService = inject(CustomerService);
-  items = this.customerService.getCustomerList();
-*/
 
 opportunityService = inject(OpportunityService);
 opportunities: SalesOpportunity[] = [];

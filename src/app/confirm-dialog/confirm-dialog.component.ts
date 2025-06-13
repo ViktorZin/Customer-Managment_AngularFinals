@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-//import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [/*BrowserAnimationsModule,*/ MatDialogModule, MatButtonModule],
+  imports: [MatDialogModule, MatButtonModule],
   template: `
+  <!-- This is a confirm dialog for deleting a customer, using Angular Material-->
   <h2 mat-dialog-title>Bestätigen</h2>
   <mat-dialog-content>
   <p>Möchten Sie diesen Kunden wirklich löschen?</p>

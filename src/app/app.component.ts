@@ -7,7 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
   imports: [RouterOutlet],
   //templateUrl: './app.component.html',
   template: `
-    <h1>APP-COMPONENT-MAIN</h1>
+    <h1>Customer-Management-App</h1>
     <router-outlet />
 
   `,

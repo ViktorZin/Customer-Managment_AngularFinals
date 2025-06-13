@@ -11,6 +11,7 @@ export class CustomerService {
   private apiUrl = 'http://localhost:3000/customers/';
   nextCustomerID: number = 0;
 
+  //initialized the Service,, gathers data
   constructor(private http: HttpClient) {
     let customers: CustomerData[];
     this.getCustomerList().subscribe(data => {
@@ -20,6 +21,7 @@ export class CustomerService {
 
   }
 
+  //this function calculates the next customerID, which is neccessary for creating new customers.
   calculateNextCustomerID(customers: CustomerData[]) {
     let highestID: number = 0;
     for(let i = 0; i < customers.length; i++) {
@@ -31,6 +33,8 @@ export class CustomerService {
     this.nextCustomerID = highestID;
   }
 
+  //this function creates a new customer based on the given data, and adds them to the database
+  //C in CRUD
   createCustomer({lastName, firstName, mail, tel, job} : {lastName: string; firstName: string; mail: string; tel?: string; job?: string}) {
     let customer: CustomerData = {
       id: this.nextCustomerID,
@@ -48,10 +52,13 @@ export class CustomerService {
     });    
   }
 
+  //this function returns one customer given a search ID from the database 
+  //R of CRUD
   getCustomerByID(id: number): Observable<CustomerData> {
     return this.http.get<CustomerData>(`${this.apiUrl}${id}`);
   }
 
+  //this function should check if a customer exists, based on ID. currently not in use anymore.
   doesCustomerExistByID(id: number) {
     return this.getCustomerByID(id).subscribe(data => {
       if(data === null) {
@@ -64,11 +71,14 @@ export class CustomerService {
     return false;
   }
 
+  //returns the full list of customers from the Database.
+  //R of CRUD
   getCustomerList(): Observable<CustomerData[]> {
     return this.http.get<CustomerData[]>(this.apiUrl);
   }
 
-
+//updates a customer in the database with new Values
+//U of CRUD
 updateCustomerByID(
   id: number,
   { lastName, firstName, mail, tel, job }: 
@@ -92,7 +102,8 @@ updateCustomerByID(
 
 
 
-  
+  //Deletes a Customer from the Database
+  //D of CRUD
   deleteCustomerByID(id: number) {
     let customer: CustomerData;
     this.getCustomerByID(id).subscribe(data => {

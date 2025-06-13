@@ -22,6 +22,8 @@ export interface TableContent {
       data-table displays something at least.
     </p>
 
+    <!-- I tried implementing the generic reusable DataTable. it mostly works, except for I can't actually add any data properly. 
+  or, I can't add generic data, which was the whole point. I abandoned it because of time constraints. but it almost works. -->
 
     @for(entries of columns; track entries) {
       <p>{{entries.header}} {{entries.dataKey}}  {{entries.cell}}</p>

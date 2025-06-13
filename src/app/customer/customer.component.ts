@@ -16,7 +16,7 @@ import { TelNumFormatDirective } from '../tel-num-format.directive';
   imports: [TelNumFormatDirective, NavigationComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, AvatarCardComponent],
   template: `
     <app-navigation></app-navigation>
-    <div class="container">
+    <div class="container">  <!-- a container div holding the customer form, and the ng-content CustomerCard-->
       <div>
       <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
@@ -45,6 +45,7 @@ import { TelNumFormatDirective } from '../tel-num-format.directive';
       </form>
       </div>
       <div>
+        <!-- implementation of AvatarCard for the Customer. C A is Customer Avatar -->
       <app-avatar-card>
         @if(givenCustomer === null) {
           <h1>C A</h1>
@@ -91,12 +92,14 @@ export class CustomerComponent {
   givenCustomer: CustomerData | null = null;
   customerService = inject(CustomerService);
   
+  //on initialization
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       let id = params.get('id');
       if(id) {
-
+        //if a valid id is given (0 or higher)
         if(+id !== -1) {
+          //the customer with the given ID is fetched using the customerService, from the mock database.
           this.customerService.getCustomerByID(+id).subscribe(data => {
             this.givenCustomer = data;
             this.displayCustomerData();
@@ -110,6 +113,7 @@ export class CustomerComponent {
     })
   }
   
+  //setup for the FormGroup, with FormControls and required validators
   customerForm = new FormGroup({
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
@@ -118,6 +122,7 @@ export class CustomerComponent {
     unternehmen: new FormControl('')    
   })
 
+  //sets the formGroup/FormControls values to the givenCustomer values, if a customer is being edited.
   displayCustomerData() {
     if(this.givenCustomer !== null) {
       this.customerForm.controls.firstName.setValue(this.givenCustomer.vorname);
@@ -133,6 +138,7 @@ export class CustomerComponent {
     } 
   }
 
+  //returns the customer values from the formControl.
   passCustomerData() {
     return {
             lastName: this.customerForm.controls.lastName.value!, 
@@ -147,6 +153,7 @@ export class CustomerComponent {
   onSubmit() {
     
     if(this.customerForm.status) {
+      //if there was a customer given, then that means that we edited the customer, so we need to update the database entry
       if(this.givenCustomer !== null) {
         let customer: CustomerData;
        
@@ -158,6 +165,7 @@ export class CustomerComponent {
           this.router.navigate(['/customers']);
         
       }
+      //if there was no customer given, then we create a new one, and add the customer to the database
       else {
         this.customerService.createCustomer(this.passCustomerData()).subscribe(customer => {});
         console.log("Creating a new Customer");

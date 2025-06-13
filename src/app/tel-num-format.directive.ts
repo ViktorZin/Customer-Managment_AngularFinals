@@ -8,6 +8,7 @@ export class TelNumFormatDirective {
   constructor(private el: ElementRef) { }
 
   @HostListener('input', ['$event'])
+  //this directive reformats the phone numbers
   onInputChange(event: any): void {
     let input = this.el.nativeElement;
     let cleaned = input.value.replace(/\D+/g, '');

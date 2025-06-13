@@ -11,20 +11,12 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   selector: 'app-navigation',
   imports: [RouterLink, MatToolbarModule, MatSidenavModule, MatListModule, MatIconModule, MatButtonModule],
   template: `
-  <!--
-    <nav class="navigation">
-      <li><a [routerLink]="['']">HOME</a></li>
-      <li><a [routerLink]="['/customers']">CUSTOMERS</a></li>
-      <li><a [routerLink]="['/customer', 0]">CUSTOMER</a></li>
-      <li><a [routerLink]="['/opportunities']">OPPORTUNITIES</a></li>
-      <li><a [routerLink]="['/reports']">REPORTS</a></li>
-    </nav>
--->
-<h3>THIS IS MY ROUTER OUTLET</h3>
 
-
+<!-- Angular Material Routing Navigation, with a horizontal Nav for Desktop, and a burger menu for Mobile
+The display is controlled by CSS, and the Window Width-->
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #drawer mode="over" class="sidenav" [opened]="false">
+    <!-- Mobile Menu-->
     <mat-nav-list>
       <a mat-list-item [routerLink]="['']" (click)="drawer.close()">HOME</a>
       <a mat-list-item [routerLink]="['/customers']" (click)="drawer.close()">CUSTOMERS</a>
@@ -33,7 +25,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
       <a mat-list-item [routerLink]="['/reports']" (click)="drawer.close()">REPORTS</a>
     </mat-nav-list>
   </mat-sidenav>
-
+<!-- hamburger button-->
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       @if(isMobile) {
@@ -42,6 +34,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
         </button>
       }
       
+      <!-- basic desktop menu-->
       <nav class="desktop-menu">
         <li><a [routerLink]="['']">HOME</a></li>
         <li><a [routerLink]="['/customers']">CUSTOMERS</a></li>
@@ -77,6 +70,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
       display: block;
     }
 
+    /*the mobile/Desktop switch is based on the width variable*/ 
     @media(min-width: 768px) {
       .sidenav-container {
       height: auto;

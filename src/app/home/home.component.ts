@@ -23,7 +23,8 @@ export interface PeriodicElement {
     <p>
       home works!
     </p>
-    <h3>Angular Material Table</h3>
+
+    <h3>Angular Material Table Exdperiment</h3>
 
     <mat-form-field>
       <mat-label>Filter</mat-label>

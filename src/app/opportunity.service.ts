@@ -13,7 +13,7 @@ export class OpportunityService {
   
   constructor(private http: HttpClient) { }
 
-
+  //returns the SalesOpportunity Array form the Database
   getItems(): Observable<SalesOpportunity[]> {
     return this.http.get<SalesOpportunity[]>(this.apiUrl);
   }
