@@ -97,8 +97,11 @@ export class CustomerComponent {
       if(id) {
 
         if(+id !== -1) {
-          this.givenCustomer = this.customerService.getCustomerByID(+id)!;
-          this.displayCustomerData();
+          this.customerService.getCustomerByID(+id).subscribe(data => {
+            this.givenCustomer = data;
+            this.displayCustomerData();
+          });
+   
         }  
       }
       else {
@@ -116,13 +119,10 @@ export class CustomerComponent {
   })
 
   displayCustomerData() {
-    console.log("the given customer is NULL Why am I here?");
     if(this.givenCustomer !== null) {
       this.customerForm.controls.firstName.setValue(this.givenCustomer.vorname);
       this.customerForm.controls.lastName.setValue(this.givenCustomer.nachname);
       this.customerForm.controls.email.setValue(this.givenCustomer.email);
-
-      console.log("givenCustomer mail: " + this.givenCustomer.email);
 
       if(this.givenCustomer.telnum !== undefined) {
         this.customerForm.controls.telnum.setValue(this.givenCustomer.telnum);
@@ -145,18 +145,29 @@ export class CustomerComponent {
   
 
   onSubmit() {
+    
     if(this.customerForm.status) {
       if(this.givenCustomer !== null) {
-        if(this.customerService.doesCustomerExistByID(this.givenCustomer.id)){
+        let customer: CustomerData;
+       
           console.log("Editing an existing Customer");
-          this.customerService.updateCustomerByID(this.givenCustomer.id, this.passCustomerData());
-        }
+          this.customerService.updateCustomerByID(this.givenCustomer.id, this.passCustomerData())
+          .subscribe( {
+            error: err => console.error('Update error: ', err)
+          });
+          this.router.navigate(['/customers']);
+        
       }
       else {
-        this.customerService.createCustomer(this.passCustomerData());
+        this.customerService.createCustomer(this.passCustomerData()).subscribe(customer => {});
         console.log("Creating a new Customer");
+          this.router.navigate(['/customers']);
       }
-      this.router.navigate(['/customers']);
+    
     }
+
+
+
+
   }
 }

@@ -1,41 +1,34 @@
 import { Injectable } from '@angular/core';
 import { CustomerData } from './interfaces/customer-data';
+import { Observable, switchMap, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
   
-  customers: CustomerData[] = [];
+  private apiUrl = 'http://localhost:3000/customers/';
   nextCustomerID: number = 0;
 
-  constructor() {
-    //{lastName: "", firstName: "", mail: "", tel?: "", job?: "" }
+  constructor(private http: HttpClient) {
+    let customers: CustomerData[];
+    this.getCustomerList().subscribe(data => {
+      customers = data;
+      this.calculateNextCustomerID(customers);
+    });
 
-    this.createCustomer({lastName: "Dobrovolskis", firstName: "Viktoras", mail: "viktorasd@gmx.de", tel: "017631350213"});
-    this.createCustomer({lastName: "Wurst", firstName: "Hans", mail: "wurst.Hans@hotmail.com", job: "Würstchenbude"});
-    this.createCustomer({lastName: "Punghorst", firstName: "Franziska", mail: "franziska-punghorst@web.de", tel: "01728778457", job: "Air Liquide" });
-    this.createCustomer({lastName: "Zin", firstName: "Viktor", mail: "viktorzin@viktorzin.com", job: "Studio Beyond Abyss" });
-    this.createCustomer({lastName: "Kromallek", firstName: "Dieter", mail: "d.kromallek@yahoo.com", job: "Malermeister Kromallek" });
-
-    this.customers[0].id = 0;
-    this.customers[1].id = 1;
-    this.customers[2].id = 2;
-    this.customers[3].id = 3;
-    this.customers[4].id = 4;
-
-    this.calculateNextCustomerID();
   }
 
-  calculateNextCustomerID() {
+  calculateNextCustomerID(customers: CustomerData[]) {
     let highestID: number = 0;
-    for(let i = 0; i < this.customers.length; i++) {
-      if(this.customers[i].id! > highestID){
-        highestID === this.customers[i].id;
+    for(let i = 0; i < customers.length; i++) {
+      if(customers[i].id! > highestID){
+        highestID = customers[i].id;
       }
     }
     highestID++;
-    this.nextCustomerID === highestID;
+    this.nextCustomerID = highestID;
   }
 
   createCustomer({lastName, firstName, mail, tel, job} : {lastName: string; firstName: string; mail: string; tel?: string; job?: string}) {
@@ -47,51 +40,67 @@ export class CustomerService {
       telnum: tel !== undefined ? tel : '',
       unternehmen: job !== undefined ? job : ''
     }
-    this.customers.push(customer);
+    console.log("I made a custoner. nachname: " + customer.nachname + " | vorname: " + customer.vorname + " und der sollte jetzt eig. in der Database landen....");
     this.nextCustomerID++;
+    return this.http.post<CustomerData>(this.apiUrl, {
+      ...customer,
+      id: customer.id.toString()
+    });    
   }
 
-
-  getCustomerByID(id: number) {
-    let customer = this.customers.find(customer => customer.id === id);
-    if(customer != null) {
-      return customer;
-    }
-    else {
-      return null;
-    }
+  getCustomerByID(id: number): Observable<CustomerData> {
+    return this.http.get<CustomerData>(`${this.apiUrl}${id}`);
   }
 
   doesCustomerExistByID(id: number) {
-    if(this.customers.find(customer => customer.id === id)){
-      return true;
-    }
+    return this.getCustomerByID(id).subscribe(data => {
+      if(data === null) {
+        return false;
+      }
+      else {
+        return true;
+      }
+    })
     return false;
   }
 
-  getCustomerList() {
-    return this.customers;
+  getCustomerList(): Observable<CustomerData[]> {
+    return this.http.get<CustomerData[]>(this.apiUrl);
   }
 
-  updateCustomerByID(id: number, {lastName, firstName, mail, tel, job} : {lastName: string, firstName: string, mail: string, tel?: string, job?: string}) {
-    let customer = this.getCustomerByID(id);
-    if(customer) {
-        customer.nachname = lastName;
-        customer.vorname = firstName;
-        customer.email = mail;
-        customer.telnum = tel !== undefined ? tel : '';
-        customer.unternehmen = job !== undefined ? job : '';
-    }
-  }
 
-  deleteCustomerByID(id: number) {
-    let customer = this.getCustomerByID(id);
-    if(customer){
-      let index = this.customers.indexOf(customer);
-      if(index > -1){
-        this.customers.splice(index, 1);
+updateCustomerByID(
+  id: number,
+  { lastName, firstName, mail, tel, job }: 
+  { lastName: string; firstName: string; mail: string; tel?: string; job?: string }
+): Observable<CustomerData> {
+  return this.getCustomerByID(id).pipe(
+    switchMap(customer => {
+      if (!customer) {
+        return throwError(() => new Error('Customer not found'));
       }
-    }
+      customer.nachname = lastName;
+      customer.vorname = firstName;
+      customer.email = mail;
+      customer.telnum = tel ?? '';
+      customer.unternehmen = job ?? '';
+
+      return this.http.put<CustomerData>(`${this.apiUrl}${customer.id}`, customer);
+    })
+  );
+}
+
+
+
+  
+  deleteCustomerByID(id: number) {
+    let customer: CustomerData;
+    this.getCustomerByID(id).subscribe(data => {
+      customer = data;
+      if(customer){
+        this.http.delete<void>(`${this.apiUrl}${customer.id}`).subscribe(data => {});
+      }
+    })
   }
 
 }

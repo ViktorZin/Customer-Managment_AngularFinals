@@ -84,14 +84,22 @@ import { MatTableModule } from '@angular/material/table';
   `
 })
 export class CustomersComponent {
-  
-  constructor(private router: Router, private dialog: MatDialog) {}
 
   customerService = inject(CustomerService);
-  items = this.customerService.getCustomerList();
-  inputValue: string = '';
+  items: CustomerData[] = [];
+  filteredItems: CustomerData[] = [];
 
-  filteredItems: CustomerData[] = this.items;
+  constructor(private router: Router, private dialog: MatDialog) 
+  {
+    this.customerService.getCustomerList().subscribe(data => {
+      this.items = data;
+      this.filteredItems = this.items;
+    })
+  }
+
+
+  //items = this.customerService.getCustomerList();
+  inputValue: string = '';
 
   setFilter() {
     console.log("filtering");
