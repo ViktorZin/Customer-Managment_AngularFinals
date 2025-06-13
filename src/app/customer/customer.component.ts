@@ -8,10 +8,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AvatarCardComponent } from '../avatar-card/avatar-card.component';
+import { TelNumFormatDirective } from '../tel-num-format.directive';
+
 
 @Component({
   selector: 'app-customer',
-  imports: [NavigationComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, AvatarCardComponent],
+  imports: [TelNumFormatDirective, NavigationComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, AvatarCardComponent],
   template: `
     <app-navigation></app-navigation>
     <div class="container">
@@ -31,7 +33,7 @@ import { AvatarCardComponent } from '../avatar-card/avatar-card.component';
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label for="telnum">Telephone Number: </mat-label>
-          <input matInput id="telnum" type="text" formControlName="telnum" />
+          <input matInput id="telnum" type="text" appTelNumFormat formControlName="telnum" />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label for="company">Company: </mat-label>
@@ -79,6 +81,9 @@ import { AvatarCardComponent } from '../avatar-card/avatar-card.component';
   }
   `
 })
+
+
+
 export class CustomerComponent {
 
   constructor(private route: ActivatedRoute, private router: Router) {}
